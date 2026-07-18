@@ -1,3 +1,3 @@
-export default function UserLayout({ children }: { children: React.ReactNode }) {
+export default function UserLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return <main>{children}</main>;
 }

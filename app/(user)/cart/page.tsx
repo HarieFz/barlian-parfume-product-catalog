@@ -6,7 +6,6 @@ import { ChevronLeftIcon, MinusIcon, PlusIcon, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "../_store/useCartStore";
-import { sendToWhatsApp } from "../_utils/whatsapp";
 import { formatPrice } from "../_utils/formatPrice";
 
 export default function Cart() {
@@ -20,7 +19,7 @@ export default function Cart() {
 
   const handleCheckout = () => {
     if (items.length === 0) return;
-    sendToWhatsApp(items, totalPrice);
+    router.push("/checkout");
   };
 
   return (

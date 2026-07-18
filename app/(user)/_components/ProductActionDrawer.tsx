@@ -2,17 +2,20 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { useRouter } from "next/navigation";
+import { DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { MinusIcon, PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import { ProductActionDrawerProps, ProductVariant } from "../_types";
 import { parsePrice, useCartStore } from "../_store/useCartStore";
-import { sendToWhatsApp } from "../_utils/whatsapp";
 import { formatPrice } from "../_utils/formatPrice";
 
-export default function ProductActionDrawer({ product, mode }: ProductActionDrawerProps) {
-  const addToCart = useCartStore((state) => state.addToCart);
+export default function ProductActionDrawer({ product, mode }: Readonly<ProductActionDrawerProps>) {
+  const router = useRouter();
+
+  const { addToCart, clearCart } = useCartStore();
+
   const imgRef = useRef<HTMLImageElement>(null);
 
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
@@ -21,38 +24,27 @@ export default function ProductActionDrawer({ product, mode }: ProductActionDraw
   const increment = () => setQuantity((prev) => prev + 1);
   const decrement = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
+  const cartItem = {
+    id: product.id,
+    name: product.name,
+    price: selectedVariant.price,
+    numericPrice: parsePrice(selectedVariant.price),
+    size: selectedVariant.size,
+    image: product.image,
+  };
+
   const executeAddToCart = () => {
-    addToCart(
-      {
-        id: product.id,
-        name: product.name,
-        price: selectedVariant.price,
-        numericPrice: parsePrice(selectedVariant.price),
-        size: selectedVariant.size,
-        image: product.image,
-      },
-      quantity,
-    );
+    addToCart(cartItem, quantity);
   };
 
-  const handleDirectWhatsApp = () => {
-    const numericPrice = parsePrice(selectedVariant.price);
-    const totalPrice = numericPrice * quantity;
+  const handleBuyNow = () => {
+    clearCart();
 
-    const directItem = {
-      id: product.id,
-      name: product.name,
-      price: selectedVariant.price,
-      numericPrice: numericPrice,
-      size: selectedVariant.size,
-      image: product.image,
-      quantity: quantity,
-    };
+    addToCart(cartItem, quantity);
 
-    sendToWhatsApp([directItem], totalPrice);
+    router.push("/checkout");
   };
 
-  // Animasi Gambar Terbang menuju Keranjang
   const runFlyAnimation = () => {
     const cartTarget = document.getElementById("cart-icon") || document.querySelector(".shopping-basket-icon");
 
@@ -68,7 +60,6 @@ export default function ProductActionDrawer({ product, mode }: ProductActionDraw
     flyingImg.src = imgRef.current.src;
     flyingImg.className = "animate-fly";
 
-    // Styling dasar elemen fly animation
     flyingImg.style.width = `${imgRect.width}px`;
     flyingImg.style.height = `${imgRect.height}px`;
     flyingImg.style.top = `${imgRect.top}px`;
@@ -94,7 +85,6 @@ export default function ProductActionDrawer({ product, mode }: ProductActionDraw
 
       executeAddToCart();
 
-      // Efek kejut kecil pada icon basket belanja
       cartTarget.classList.add("scale-110");
       setTimeout(() => cartTarget.classList.remove("scale-110"), 150);
     }, 800);
@@ -104,18 +94,18 @@ export default function ProductActionDrawer({ product, mode }: ProductActionDraw
     if (mode === "cart") {
       runFlyAnimation();
     } else {
-      handleDirectWhatsApp();
+      handleBuyNow();
     }
   };
 
   return (
     <DrawerContent className="max-w-md mx-auto rounded-t-[24px]">
       <DrawerHeader className="pb-2">
-        <DrawerTitle></DrawerTitle>
+        <DrawerTitle />
+        <DrawerDescription />
       </DrawerHeader>
 
       <div className="no-scrollbar overflow-y-auto px-6 pb-6 space-y-6">
-        {/* Ringkasan Produk Terpilih */}
         <div className="w-full flex gap-4 p-3 rounded-xl border border-zinc-100 bg-zinc-50/50 shadow-sm">
           <div className="relative h-20 w-20 rounded-lg overflow-hidden bg-zinc-100 shrink-0">
             <Image
@@ -136,36 +126,39 @@ export default function ProductActionDrawer({ product, mode }: ProductActionDraw
           </div>
         </div>
 
-        {/* Opsi Pilihan Ukuran */}
         <div className="space-y-3">
           <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-400">
-            Ukuran ({product.variants?.length || 0})
+            Ukuran ({product.variants.length})
           </h4>
 
           <div className="grid grid-cols-3 gap-2.5">
-            {product.variants?.map((variant) => {
+            {product.variants.map((variant) => {
               const isSelected = selectedVariant.size === variant.size;
+
               return (
                 <button
                   key={variant.size}
                   onClick={() => setSelectedVariant(variant)}
-                  className={`group w-full flex flex-col border rounded-xl overflow-hidden cursor-pointer transition-all duration-200 text-left ${
+                  className={`group w-full flex flex-col border rounded-xl overflow-hidden transition-all ${
                     isSelected
                       ? "border-amber-500 bg-amber-50/10 ring-1 ring-amber-500"
-                      : "border-zinc-200 hover:border-zinc-300 bg-white"
+                      : "border-zinc-200 bg-white hover:border-zinc-300"
                   }`}
                 >
-                  <div className="relative w-full aspect-4/3 bg-zinc-50 border-b border-zinc-100">
+                  <div className="relative aspect-4/3 w-full bg-zinc-50 border-b border-zinc-100">
                     <Image
                       src={product.image}
                       alt={variant.size}
                       fill
-                      sizes="(max-width: 768px) 33vw, 120px"
+                      sizes="(max-width:768px)33vw,120px"
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   </div>
-                  <div className="py-2 px-1 text-center w-full">
-                    <p className={`text-xs ${isSelected ? "font-bold text-amber-500" : "text-zinc-600 font-medium"}`}>
+
+                  <div className="px-1 py-2 text-center">
+                    <p
+                      className={isSelected ? "text-xs font-bold text-amber-500" : "text-xs font-medium text-zinc-600"}
+                    >
                       {variant.size}
                     </p>
                   </div>
@@ -175,37 +168,27 @@ export default function ProductActionDrawer({ product, mode }: ProductActionDraw
           </div>
         </div>
 
-        {/* Pengatur Kuantitas Jumlah */}
-        <div className="flex items-center justify-between pt-2 border-t border-zinc-100">
+        <div className="flex items-center justify-between border-t border-zinc-100 pt-2">
           <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Jumlah</h4>
 
-          <div className="flex items-center gap-4 bg-zinc-50 border border-zinc-100 rounded-full p-1">
-            <Button
-              size="icon"
-              variant="ghost"
-              className="h-8 w-8 rounded-full text-zinc-600 hover:bg-white hover:text-zinc-900 shadow-none transition-all"
-              onClick={decrement}
-            >
-              <MinusIcon className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-4 rounded-full border border-zinc-100 bg-zinc-50 p-1">
+            <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full" onClick={decrement}>
+              <MinusIcon className="h-3.5 w-3.5" />
             </Button>
-            <span className="font-semibold text-sm text-zinc-900 min-w-6 text-center">{quantity}</span>
-            <Button
-              size="icon"
-              variant="ghost"
-              className="h-8 w-8 rounded-full text-zinc-600 hover:bg-white hover:text-zinc-900 shadow-none transition-all"
-              onClick={increment}
-            >
-              <PlusIcon className="w-3.5 h-3.5" />
+
+            <span className="min-w-6 text-center text-sm font-semibold">{quantity}</span>
+
+            <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full" onClick={increment}>
+              <PlusIcon className="h-3.5 w-3.5" />
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Footer Drawer */}
-      <DrawerFooter className="border-t border-zinc-100 pt-4 bg-white">
+      <DrawerFooter className="border-t border-zinc-100 bg-white pt-4">
         <Button
           size="lg"
-          className="w-full h-12 rounded-full font-medium text-xs tracking-wide bg-zinc-900 text-white hover:bg-zinc-800 transition-colors shadow-sm"
+          className="h-12 w-full rounded-full bg-zinc-900 text-xs font-medium tracking-wide text-white"
           onClick={handleAction}
         >
           {mode === "cart" ? "Tambah ke Keranjang" : "Pesan Sekarang"}

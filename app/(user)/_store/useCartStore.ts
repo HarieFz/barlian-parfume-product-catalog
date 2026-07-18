@@ -21,7 +21,7 @@ interface CartState {
 
 // Helper untuk mengubah string "Rp150.000" menjadi angka 150000
 export const parsePrice = (priceStr: string): number => {
-  return parseInt(priceStr.replace(/[^\d]/g, ""), 10);
+  return Number.parseInt(priceStr.replace(/[^\d]/g, ""), 10);
 };
 
 export const useCartStore = create<CartState>((set, get) => ({
