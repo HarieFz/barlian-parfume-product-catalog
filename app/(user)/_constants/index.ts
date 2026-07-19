@@ -13,7 +13,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -27,7 +27,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -41,7 +41,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -55,7 +55,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -69,7 +69,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -83,7 +83,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -97,7 +97,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -111,7 +111,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -125,7 +125,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -140,7 +140,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -154,7 +154,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -168,7 +168,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -182,7 +182,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -196,7 +196,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -210,7 +210,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -224,7 +224,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -238,7 +238,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -253,7 +253,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -267,7 +267,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -281,7 +281,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -295,7 +295,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -309,7 +309,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
@@ -323,7 +323,7 @@ const PRODUCTS: Product[] = [
     variants: [
       { size: "10ml", price: "Rp17.000" },
       { size: "15ml", price: "Rp27.000" },
-      { size: "30ml", price: "Rp50.000" },
+      { size: "30ml", price: "Rp40.000" },
       { size: "50ml", price: "Rp68.000" },
     ],
   },
