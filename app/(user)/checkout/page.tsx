@@ -241,7 +241,7 @@ export default function CheckoutPage() {
   const handleCheckout = () => {
     if (items.length === 0) return;
 
-    if (!address.name || !address.phone || !address.address || !address.detailAddress) {
+    if (!address.name.trim() || !address.phone.trim() || !address.address.trim() || !address.detailAddress.trim()) {
       setOpen(true);
       return;
     }
@@ -520,12 +520,6 @@ export default function CheckoutPage() {
                     const value = e.target.value;
                     setKeyword(value);
                     setSelectedRate(null);
-                    // BUGFIX: sebelumnya `name`, `phone`, `detailAddress`, `detailOther`
-                    // tidak disertakan di sini. Karena useEffect sync-balik menimpa
-                    // seluruh state lokal dengan nilai dari store setiap kali `address`
-                    // berubah, draft Nama/Telepon/Detail Alamat yang belum disimpan
-                    // ikut hilang saat user mengetik di kolom pencarian alamat.
-                    // Sekarang disertakan agar draft tidak hilang.
                     setAddress({
                       ...address,
                       areaId: "",
