@@ -83,137 +83,137 @@ export default function CheckoutPage() {
   const grandTotal = isGarutCity ? totalPrice : totalPrice + (selectedRate?.price ?? 0);
 
   // Sync state lokal ketika global state 'address' berubah
-  useEffect(() => {
-    setName(address.name);
-    setPhone(address.phone);
-    setKeyword(address.address);
-    setDetailAddress(address.detailAddress);
-    setDetailOther(address.detailOther);
-  }, [address]);
+  useEffect(
+    function syncStateAddress() {
+      setName(address.name);
+      setPhone(address.phone);
+      setKeyword(address.address);
+      setDetailAddress(address.detailAddress);
+      setDetailOther(address.detailOther);
+    },
+    [address],
+  );
 
   // Efek Debounce untuk pencarian area Biteship Maps API
-  useEffect(() => {
-    if (isSelectingArea) {
-      setIsSelectingArea(false);
-      return;
-    }
-
-    if (!open) return;
-
-    if (keyword.trim().length < 3) {
-      setAreas([]);
-      return;
-    }
-
-    const controller = new AbortController();
-
-    const timer = setTimeout(async () => {
-      try {
-        setLoadingArea(true);
-        const response = await fetch(`/api/biteship/maps?input=${encodeURIComponent(keyword)}`, {
-          cache: "no-store",
-          signal: controller.signal,
-        });
-
-        if (!response.ok) throw new Error("Failed to fetch maps");
-
-        const result = await response.json();
-        setAreas(result.areas ?? result.data ?? []);
-      } catch (error: any) {
-        if (error.name !== "AbortError") {
-          console.error(error);
-          setAreas([]);
-        }
-      } finally {
-        setLoadingArea(false);
-      }
-    }, 500);
-
-    return () => {
-      clearTimeout(timer);
-      controller.abort();
-    };
-  }, [keyword, open]);
-
-  // Mengambil data ongkir luar kota
-  // BUGFIX: sebelumnya tidak ada mekanisme pembatalan request, sehingga respons
-  // yang datang belakangan (request lama, misal koneksi lambat) bisa menimpa
-  // hasil dari request yang lebih baru (race condition). Ditambahkan flag `ignore`
-  // + AbortController agar hanya respons dari request TERAKHIR yang dipakai.
-  // BUGFIX: setelah rates baru didapat, `selectedRate` yang lama divalidasi ulang:
-  // - jika kurir/layanan yang sama masih tersedia, harga disegarkan (bukan harga basi)
-  // - jika sudah tidak tersedia lagi (atau request gagal), selectedRate direset
-  //   supaya total pembayaran tidak memakai ongkir yang sudah tidak valid.
-  useEffect(() => {
-    let ignore = false;
-    const controller = new AbortController();
-
-    const fetchRates = async () => {
-      if (isGarutCity || !address.areaId || items.length === 0) {
-        if (!ignore) setRates([]);
+  useEffect(
+    function fetchAreas() {
+      if (isSelectingArea) {
+        setIsSelectingArea(false);
         return;
       }
 
-      try {
-        setLoadingRates(true);
-        const response = await fetch("/api/biteship/rates", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            origin_area_id: ORIGIN_AREA_ID,
-            destination_area_id: address.areaId,
-            couriers: "jne_reg,jnt",
-            items: items.map((item) => ({
-              name: item.name,
-              value: item.numericPrice,
-              quantity: item.quantity,
-              weight: 500,
-            })),
-          }),
-          signal: controller.signal,
-        });
+      if (!open) return;
 
-        if (!response.ok) throw new Error("Failed to fetch rates");
-
-        const result = await response.json();
-        if (ignore) return;
-
-        const newRates: CourierResponse[] = result.pricing ?? [];
-        setRates(newRates);
-
-        // Sinkronkan ulang kurir yang sudah dipilih dengan data ongkir terbaru
-        const currentSelected = useCheckoutStore.getState().selectedRate;
-        if (currentSelected) {
-          const stillAvailable = newRates.find((rate) => isSameCourierService(rate, currentSelected));
-          setSelectedRate(stillAvailable ? mapCourierResponseToRate(stillAvailable) : null);
-        }
-      } catch (error: any) {
-        if (ignore || error?.name === "AbortError") return;
-        console.error(error);
-        setRates([]);
-        setSelectedRate(null);
-      } finally {
-        if (!ignore) setLoadingRates(false);
+      if (keyword.trim().length < 3) {
+        setAreas([]);
+        return;
       }
-    };
 
-    fetchRates();
+      const controller = new AbortController();
 
-    return () => {
-      ignore = true;
-      controller.abort();
-    };
-  }, [address.areaId, items, address.shippingArea, isGarutCity, setSelectedRate]);
+      const timer = setTimeout(async () => {
+        try {
+          setLoadingArea(true);
+
+          const response = await fetch(`/api/biteship/maps?input=${encodeURIComponent(keyword)}`, {
+            signal: controller.signal,
+            cache: "no-store",
+          });
+
+          if (!response.ok) throw new Error("Failed to fetch maps");
+
+          const result = await response.json();
+          setAreas(result.areas ?? result.data ?? []);
+        } catch (error: any) {
+          if (error.name !== "AbortError") {
+            console.error(error);
+            setAreas([]);
+          }
+        } finally {
+          setLoadingArea(false);
+        }
+      }, 500);
+
+      return () => {
+        clearTimeout(timer);
+        controller.abort();
+      };
+    },
+    [keyword, open],
+  );
+
+  useEffect(
+    function fetchRates() {
+      let ignore = false;
+      const controller = new AbortController();
+
+      const fetchRates = async () => {
+        if (isGarutCity || !address.areaId || items.length === 0) {
+          if (!ignore) setRates([]);
+          return;
+        }
+
+        try {
+          setLoadingRates(true);
+          const response = await fetch("/api/biteship/rates", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            cache: "no-store",
+            signal: controller.signal,
+            body: JSON.stringify({
+              origin_area_id: ORIGIN_AREA_ID,
+              destination_area_id: address.areaId,
+              couriers: "jne_reg,jnt",
+              items: items.map((item) => ({
+                name: item.name,
+                value: item.numericPrice,
+                quantity: item.quantity,
+                weight: 500,
+              })),
+            }),
+          });
+
+          if (!response.ok) throw new Error("Failed to fetch rates");
+
+          const result = await response.json();
+          if (ignore) return;
+
+          const newRates: CourierResponse[] = result.pricing ?? [];
+          setRates(newRates);
+
+          // Sinkronkan ulang kurir yang sudah dipilih dengan data ongkir terbaru
+          const currentSelected = useCheckoutStore.getState().selectedRate;
+          if (currentSelected) {
+            const stillAvailable = newRates.find((rate) => isSameCourierService(rate, currentSelected));
+            setSelectedRate(stillAvailable ? mapCourierResponseToRate(stillAvailable) : null);
+          }
+        } catch (error: any) {
+          if (ignore || error?.name === "AbortError") return;
+          console.error(error);
+          setRates([]);
+          setSelectedRate(null);
+        } finally {
+          if (!ignore) setLoadingRates(false);
+        }
+      };
+
+      fetchRates();
+
+      return () => {
+        ignore = true;
+        controller.abort();
+      };
+    },
+    [address.areaId, items, address.shippingArea, isGarutCity, setSelectedRate],
+  );
 
   const handleSelectArea = (area: MapArea) => {
     setIsSelectingArea(true);
     setKeyword(area.name);
     setSelectedRate(null);
 
-    // BUGFIX: sebelumnya `detailAddress` & `detailOther` tidak disertakan di sini.
-    // Karena useEffect sync-balik akan menimpa state lokal dengan nilai dari store,
-    // draft "Detail Alamat" dan "Detail Lainnya" yang sudah diketik user ikut hilang
-    // saat memilih saran area. Sekarang disertakan agar draft tidak hilang.
     setAddress({
       ...address,
       areaId: area.id,
@@ -241,7 +241,6 @@ export default function CheckoutPage() {
   const handleCheckout = () => {
     if (items.length === 0) return;
 
-    // detailOther sengaja tidak divalidasi ketat karena bersifat opsional
     if (!address.name || !address.phone || !address.address || !address.detailAddress) {
       setOpen(true);
       return;
