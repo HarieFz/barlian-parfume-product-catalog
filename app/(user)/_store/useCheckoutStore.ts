@@ -1,9 +1,14 @@
 import { create } from "zustand";
 
+export type ShippingArea = "garut-city" | "outside-garut";
+
 export interface Address {
+  shippingArea: ShippingArea | null;
+
   areaId: string;
   name: string;
   phone: string;
+
   address: string;
   detailAddress: string;
   detailOther: string;
@@ -33,6 +38,7 @@ interface CheckoutState {
 }
 
 const initialAddress: Address = {
+  shippingArea: null,
   areaId: "",
   name: "",
   phone: "",
