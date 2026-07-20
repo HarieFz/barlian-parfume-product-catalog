@@ -51,8 +51,6 @@ export default function Address() {
         return;
       }
 
-      if (!open) return;
-
       if (keyword.trim().length < 3) {
         setAreas([]);
         return;
@@ -88,7 +86,7 @@ export default function Address() {
         controller.abort();
       };
     },
-    [keyword, open],
+    [keyword],
   );
 
   const handleSelectArea = (area: MapArea) => {
