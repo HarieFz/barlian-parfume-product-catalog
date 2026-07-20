@@ -128,7 +128,7 @@ export default function Home() {
                   {/* Wrapper Gambar dengan Efek Hover Premium */}
                   <div className="w-full aspect-square rounded-2xl overflow-hidden bg-zinc-100 relative shadow-sm border border-zinc-100">
                     <Image
-                      src={product.image}
+                      src={product.variants[3].image}
                       alt={product.name}
                       fill
                       sizes="(max-width: 768px) 50vw, 200px"

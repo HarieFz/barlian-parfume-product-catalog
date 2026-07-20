@@ -30,7 +30,7 @@ export default function ProductActionDrawer({ product, mode }: Readonly<ProductA
     price: selectedVariant.price,
     numericPrice: parsePrice(selectedVariant.price),
     size: selectedVariant.size,
-    image: product.image,
+    image: selectedVariant.image,
   };
 
   const executeAddToCart = () => {
@@ -107,10 +107,10 @@ export default function ProductActionDrawer({ product, mode }: Readonly<ProductA
 
       <div className="no-scrollbar overflow-y-auto px-6 pb-6 space-y-6">
         <div className="w-full flex gap-4 p-3 rounded-xl border border-zinc-100 bg-zinc-50/50 shadow-sm">
-          <div className="relative h-20 w-20 rounded-lg overflow-hidden bg-zinc-100 shrink-0">
+          <div className="relative w-20 h-25 rounded-lg overflow-hidden bg-zinc-100 shrink-0">
             <Image
               ref={imgRef}
-              src={product.image}
+              src={selectedVariant.image}
               alt={product.name}
               fill
               sizes="80px"
@@ -145,9 +145,9 @@ export default function ProductActionDrawer({ product, mode }: Readonly<ProductA
                       : "border-zinc-200 bg-white hover:border-zinc-300"
                   }`}
                 >
-                  <div className="relative aspect-4/3 w-full bg-zinc-50 border-b border-zinc-100">
+                  <div className="relative aspect-7/8 w-full bg-zinc-50 border-b border-zinc-100">
                     <Image
-                      src={product.image}
+                      src={variant.image}
                       alt={variant.size}
                       fill
                       sizes="(max-width:768px)33vw,120px"
@@ -155,7 +155,7 @@ export default function ProductActionDrawer({ product, mode }: Readonly<ProductA
                     />
                   </div>
 
-                  <div className="px-1 py-2 text-center">
+                  <div className="px-3 py-2 text-center">
                     <p
                       className={isSelected ? "text-xs font-bold text-amber-500" : "text-xs font-medium text-zinc-600"}
                     >
@@ -188,7 +188,7 @@ export default function ProductActionDrawer({ product, mode }: Readonly<ProductA
       <DrawerFooter className="border-t border-zinc-100 bg-white pt-4">
         <Button
           size="lg"
-          className="h-12 w-full rounded-full bg-zinc-900 text-xs font-medium tracking-wide text-white"
+          className="h-12 w-full rounded-full bg-zinc-900 font-medium tracking-wide text-white"
           onClick={handleAction}
         >
           {mode === "cart" ? "Tambah ke Keranjang" : "Pesan Sekarang"}

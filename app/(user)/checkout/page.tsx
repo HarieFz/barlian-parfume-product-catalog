@@ -7,24 +7,12 @@ import { ChevronLeftIcon, ChevronRight, MapPin } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 
 import { useCartStore } from "../_store/useCartStore";
 import { CourierRate, useCheckoutStore } from "../_store/useCheckoutStore";
 import { formatPrice } from "../_utils/formatPrice";
 import { sendToWhatsApp } from "../_utils/whatsapp";
 import { ORIGIN_AREA_ID } from "../_constants";
-
-interface MapArea {
-  id: string;
-  name: string;
-  postal_code: string;
-  latitude: number;
-  longitude: number;
-}
 
 interface CourierResponse {
   company: string;
@@ -58,19 +46,6 @@ export default function CheckoutPage() {
   const { items } = useCartStore();
   const { address, selectedRate, setAddress, setSelectedRate } = useCheckoutStore();
 
-  const [open, setOpen] = useState(false);
-
-  // Inisialisasi state lokal untuk form alamat
-  const [name, setName] = useState(address.name);
-  const [phone, setPhone] = useState(address.phone);
-  const [keyword, setKeyword] = useState(address.address);
-  const [detailAddress, setDetailAddress] = useState(address.detailAddress);
-  const [detailOther, setDetailOther] = useState(address.detailOther);
-
-  const [isSelectingArea, setIsSelectingArea] = useState(false);
-  const [areas, setAreas] = useState<MapArea[]>([]);
-  const [loadingArea, setLoadingArea] = useState(false);
-
   const [rates, setRates] = useState<CourierResponse[]>([]);
   const [loadingRates, setLoadingRates] = useState(false);
 
@@ -81,66 +56,6 @@ export default function CheckoutPage() {
   }, [items]);
 
   const grandTotal = isGarutCity ? totalPrice : totalPrice + (selectedRate?.price ?? 0);
-
-  // Sync state lokal ketika global state 'address' berubah
-  useEffect(
-    function syncStateAddress() {
-      setName(address.name);
-      setPhone(address.phone);
-      setKeyword(address.address);
-      setDetailAddress(address.detailAddress);
-      setDetailOther(address.detailOther);
-    },
-    [address],
-  );
-
-  // Efek Debounce untuk pencarian area Biteship Maps API
-  useEffect(
-    function fetchAreas() {
-      if (isSelectingArea) {
-        setIsSelectingArea(false);
-        return;
-      }
-
-      if (!open) return;
-
-      if (keyword.trim().length < 3) {
-        setAreas([]);
-        return;
-      }
-
-      const controller = new AbortController();
-
-      const timer = setTimeout(async () => {
-        try {
-          setLoadingArea(true);
-
-          const response = await fetch(`/api/biteship/maps?input=${encodeURIComponent(keyword)}`, {
-            signal: controller.signal,
-            cache: "no-store",
-          });
-
-          if (!response.ok) throw new Error("Failed to fetch maps");
-
-          const result = await response.json();
-          setAreas(result.areas ?? result.data ?? []);
-        } catch (error: any) {
-          if (error.name !== "AbortError") {
-            console.error(error);
-            setAreas([]);
-          }
-        } finally {
-          setLoadingArea(false);
-        }
-      }, 500);
-
-      return () => {
-        clearTimeout(timer);
-        controller.abort();
-      };
-    },
-    [keyword, open],
-  );
 
   useEffect(
     function fetchRates() {
@@ -209,40 +124,10 @@ export default function CheckoutPage() {
     [address.areaId, items, address.shippingArea, isGarutCity, setSelectedRate],
   );
 
-  const handleSelectArea = (area: MapArea) => {
-    setIsSelectingArea(true);
-    setKeyword(area.name);
-    setSelectedRate(null);
-
-    setAddress({
-      ...address,
-      areaId: area.id,
-      name,
-      phone,
-      address: area.name,
-      detailAddress,
-      detailOther,
-    });
-    setAreas([]);
-  };
-
-  const handleSaveAddress = () => {
-    setAddress({
-      ...address,
-      name,
-      phone,
-      address: keyword,
-      detailAddress,
-      detailOther,
-    });
-    setOpen(false);
-  };
-
   const handleCheckout = () => {
     if (items.length === 0) return;
 
     if (!address.name.trim() || !address.phone.trim() || !address.address.trim() || !address.detailAddress.trim()) {
-      setOpen(true);
       return;
     }
 
@@ -316,7 +201,10 @@ export default function CheckoutPage() {
         </Card>
 
         {/* Informasi Alamat Utama */}
-        <Card className="cursor-pointer transition-colors hover:bg-muted/50" onClick={() => setOpen(true)}>
+        <Card
+          className="cursor-pointer transition-colors hover:bg-muted/50"
+          onClick={() => router.push("/checkout/address")}
+        >
           <CardContent className="flex items-start justify-between p-4">
             <div className="flex gap-3">
               <MapPin className="mt-1 h-5 w-5 text-primary" />
@@ -478,119 +366,6 @@ export default function CheckoutPage() {
           Pesan Sekarang
         </Button>
       </footer>
-
-      {/* Form Input Alamat (Drawer) */}
-      <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent className="max-w-md mx-auto">
-          <DrawerHeader>
-            <DrawerTitle>Alamat Pengiriman</DrawerTitle>
-          </DrawerHeader>
-
-          <div className="space-y-4 px-4 pb-4 overflow-y-auto max-h-[70vh]">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nama Lengkap</Label>
-              <Input
-                id="name"
-                value={name}
-                placeholder="Masukkan nama lengkap"
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="phone">Nomor Telepon</Label>
-              <Input
-                id="phone"
-                type="tel"
-                value={phone}
-                placeholder="08xxxxxxxxxx"
-                onChange={(e) => setPhone(e.target.value)}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="address">Kecamatan / Kota / Provinsi / Kode Pos</Label>
-              <div className="relative">
-                <Input
-                  id="address"
-                  autoComplete="off"
-                  value={keyword}
-                  placeholder="Cari kecamatan, kelurahan, atau alamat"
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setKeyword(value);
-                    setSelectedRate(null);
-                    setAddress({
-                      ...address,
-                      areaId: "",
-                      address: value,
-                      name,
-                      phone,
-                      detailAddress,
-                      detailOther,
-                    });
-                  }}
-                />
-
-                {loadingArea && (
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-                    Loading...
-                  </div>
-                )}
-
-                {areas.length > 0 && (
-                  <div className="absolute z-50 mt-2 max-h-72 w-full overflow-y-auto rounded-xl border bg-background shadow-lg">
-                    {areas.map((area) => (
-                      <button
-                        key={area.id}
-                        type="button"
-                        onClick={() => handleSelectArea(area)}
-                        className="flex w-full flex-col items-start border-b px-4 py-3 text-left transition hover:bg-muted last:border-none"
-                      >
-                        <span className="font-medium">{area.name}</span>
-                        {area.postal_code && (
-                          <span className="mt-1 text-xs text-muted-foreground">Kode Pos: {area.postal_code}</span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="detail-address">Detail Alamat</Label>
-              <Textarea
-                id="detail-address"
-                rows={4}
-                value={detailAddress}
-                placeholder="Cth. Jl. Nama Jalan No. 123, RT 01/RW 02"
-                onChange={(e) => setDetailAddress(e.target.value)}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="detail-other">Detail Lainnya (Cth: Blok / Unit No., Patokan)</Label>
-              <Textarea
-                id="detail-other"
-                rows={4}
-                value={detailOther}
-                placeholder="Cth: Blok C No. 12, cat rumah warna krem"
-                onChange={(e) => setDetailOther(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <DrawerFooter className="border-t bg-background">
-            <Button
-              onClick={handleSaveAddress}
-              disabled={!name.trim() || !phone.trim() || !keyword.trim() || !detailAddress.trim()}
-            >
-              Simpan Alamat
-            </Button>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
     </div>
   );
 }

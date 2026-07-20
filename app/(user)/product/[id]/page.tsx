@@ -57,7 +57,7 @@ export default function Product() {
         {/* Product Image Showcase */}
         <section className="flex items-center justify-center">
           <Image
-            src={product.image}
+            src={product.variants[3].image}
             alt={product.name}
             width={0}
             height={0}
